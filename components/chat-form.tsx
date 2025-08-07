@@ -24,7 +24,7 @@ function detectScript(text: string): 'latin' | 'other' {
 export function ChatForm({ className, ...props }: React.ComponentProps<"div">) {
   // Get websiteId from URL parameters or default to akashdth
   const [websiteId, setWebsiteId] = useState<string>('akashdth')
-  const [websiteInfo, setWebsiteInfo] = useState<{name: string, domain: string} | null>(null)
+  const [websiteInfo, setWebsiteInfo] = useState<{ name: string, domain: string } | null>(null)
 
   useEffect(() => {
     // Get websiteId from URL parameters
@@ -34,16 +34,16 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"div">) {
       if (paramWebsiteId) {
         setWebsiteId(paramWebsiteId)
       }
-      
+
       // Set website info for display
-      const websiteConfigs: Record<string, {name: string, domain: string}> = {
+      const websiteConfigs: Record<string, { name: string, domain: string }> = {
         'akashdth': { name: 'AkashDTH', domain: 'akashdth.com' },
         'streamplay': { name: 'StreamPlay', domain: 'streamplay.com' },
         'matchbestgroup': { name: 'MatchBest Group', domain: 'matchbestgroup.com' },
         'website3': { name: 'Website3', domain: 'website3.com' },
         'cignal': { name: 'Cignal', domain: 'cignal.tv' }
       }
-      
+
       const currentWebsite = websiteConfigs[paramWebsiteId || 'akashdth']
       setWebsiteInfo(currentWebsite)
     }
@@ -94,35 +94,35 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"div">) {
     const lastMessage = messages[messages.length - 1]
     if (lastMessage && lastMessage.role === 'user') {
       const userMessage = lastMessage.content.toLowerCase()
-      
+
       // Check for demo requests
       if (userMessage.includes('demo') || userMessage.includes('book demo') || userMessage.includes('request demo')) {
         setInquiryType('demo')
         setShowInquiryForm(true)
         return
       }
-      
+
       // Check for trial requests
       if (userMessage.includes('trial') || userMessage.includes('free trial') || userMessage.includes('start trial')) {
         setInquiryType('trial')
         setShowInquiryForm(true)
         return
       }
-      
+
       // Check for consultation requests
       if (userMessage.includes('consultation') || userMessage.includes('schedule') || userMessage.includes('appointment')) {
         setInquiryType('consultation')
         setShowInquiryForm(true)
         return
       }
-      
+
       // Check for subscription requests
       if (userMessage.includes('subscribe') || userMessage.includes('sign up') || userMessage.includes('get plan')) {
         setInquiryType('subscription')
         setShowInquiryForm(true)
         return
       }
-      
+
       // Check for support requests
       if (userMessage.includes('support') || userMessage.includes('help') || userMessage.includes('technical')) {
         setInquiryType('support')
@@ -179,7 +179,7 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"div">) {
   const startListening = () => {
     setSpeechError(null);
     setIsInitializing(true);
-    
+
     // Check if we're in a browser environment
     if (typeof window === 'undefined') {
       setSpeechError('Speech recognition is not available in this environment.');
@@ -210,12 +210,12 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"div">) {
       recognitionRef.current.onresult = (event: any) => {
         const transcript = event.results[0][0].transcript;
         console.log('Speech recognized:', transcript);
-        
+
         // Directly send the message instead of setting it in input field
         if (transcript.trim()) {
           append({ role: "user", content: transcript.trim() });
         }
-        
+
         setIsListening(false);
       };
 
@@ -223,7 +223,7 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"div">) {
         console.error('Speech recognition error:', event.error);
         setIsListening(false);
         setIsInitializing(false);
-        
+
         switch (event.error) {
           case 'network':
             setSpeechError('Network error. Please check your internet connection.');
@@ -321,14 +321,14 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"div">) {
             {showAvatar && (
               <div className={cn(
                 "flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold text-xs shadow-lg",
-                isUser 
-                  ? "bg-gradient-to-br from-blue-500 to-blue-600 ring-2 ring-blue-200" 
+                isUser
+                  ? "bg-gradient-to-br from-blue-500 to-blue-600 ring-2 ring-blue-200"
                   : "bg-gradient-to-br from-purple-500 to-purple-600 ring-2 ring-purple-200"
               )}>
                 {isUser ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
               </div>
             )}
-            
+
             <div className={cn(
               "flex-1 max-w-[85%] space-y-1",
               isUser ? "text-right" : "text-left"
@@ -361,7 +361,7 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"div">) {
                   </ReactMarkdown>
                 </div>
               </div>
-              
+
               <div className={cn(
                 "text-xs text-gray-500 flex items-center",
                 isUser ? "justify-end" : "justify-start"
@@ -378,7 +378,7 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"div">) {
           </div>
         )
       })}
-      
+
       {isLoading && (
         <div className="flex items-start gap-3 animate-in slide-in-from-bottom-4 fade-in-0">
           <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white font-semibold text-xs shadow-lg ring-2 ring-purple-200">
@@ -398,7 +398,7 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"div">) {
           </div>
         </div>
       )}
-      
+
       {/* Auto-scroll anchor */}
       <div ref={messagesEndRef} />
     </div>
@@ -427,15 +427,15 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"div">) {
                       <Tv className="w-8 h-8 text-white" />
                     </div>
                   </div>
-                  
+
                   <h2 className="text-2xl font-bold text-gray-900 mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                     Welcome to {websiteInfo?.name || 'Our Service'}!
                   </h2>
                   <p className="text-sm text-gray-600 mb-4 leading-relaxed">
-                     I'm your AI assistant, ready to help you with plans, channels, subscriptions, and more. 
+                    Hello, I'm your AI assistant, ready to help you with plans, channels, subscriptions, and more.
                     Let's make your entertainment experience amazing! 🎬✨
                   </p>
-                  
+
                   {/* Quick Action Cards */}
                   <div className="grid grid-cols-2 gap-2 mb-4">
                     <button
@@ -452,7 +452,7 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"div">) {
                         </div>
                       </div>
                     </button>
-                    
+
                     <button
                       onClick={() => executeCommand("I want to book a demo")}
                       className="group p-3 text-left bg-white/80 backdrop-blur-sm rounded-lg border border-gray-200 hover:border-purple-300 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
@@ -467,7 +467,7 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"div">) {
                         </div>
                       </div>
                     </button>
-                    
+
                     <button
                       onClick={() => executeCommand("What channels are included?")}
                       className="group p-3 text-left bg-white/80 backdrop-blur-sm rounded-lg border border-gray-200 hover:border-green-300 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
@@ -482,7 +482,7 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"div">) {
                         </div>
                       </div>
                     </button>
-                    
+
                     <button
                       onClick={() => executeCommand("I need technical support")}
                       className="group p-3 text-left bg-white/80 backdrop-blur-sm rounded-lg border border-gray-200 hover:border-orange-300 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
@@ -498,7 +498,7 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"div">) {
                       </div>
                     </button>
                   </div>
-                  
+
                   {/* Features */}
                   <div className="flex items-center justify-center space-x-3 text-xs text-gray-500">
                     <div className="flex items-center space-x-1">
@@ -543,26 +543,26 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"div">) {
                         className={cn(
                           "h-6 w-6 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-105",
                           isListening ? "bg-red-100 text-red-600 animate-pulse shadow-lg" :
-                          isInitializing ? "bg-blue-100 text-blue-600 animate-pulse shadow-lg" :
-                          "bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 hover:shadow-md"
+                            isInitializing ? "bg-blue-100 text-blue-600 animate-pulse shadow-lg" :
+                              "bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 hover:shadow-md"
                         )}
                         aria-label={isListening ? "Stop listening" : isInitializing ? "Initializing..." : "Start voice input"}
                         disabled={isLoading || isInitializing}
                       >
                         {isListening ? <Mic className="w-3 h-3" /> :
-                         isInitializing ? <div className="w-3 h-3 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" /> :
-                         <MicOff className="w-3 h-3" />}
+                          isInitializing ? <div className="w-3 h-3 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" /> :
+                            <MicOff className="w-3 h-3" />}
                       </button>
                     </TooltipTrigger>
                     <TooltipContent side="top">
                       {isListening ? "Listening... Click to stop." :
-                       isInitializing ? "Initializing microphone..." :
-                       "Voice to text"}
+                        isInitializing ? "Initializing microphone..." :
+                          "Voice to text"}
                     </TooltipContent>
                   </Tooltip>
                 </div>
               </div>
-              
+
               <Button
                 type="submit"
                 disabled={!input.trim() || isLoading}
