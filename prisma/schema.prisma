@@ -1,0 +1,64 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGODB_URI")
+}
+
+model UserInquiry {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  email       String
+  phone       String?
+  company     String?
+  inquiryType String   // "demo", "trial", "consultation", "support", "other"
+  message     String?
+  plan        String?  // For AkashDTH plans
+  status      String   @default("pending") // "pending", "approved", "rejected", "in_progress", "completed", "cancelled"
+  priority    String   @default("medium") // "low", "medium", "high", "urgent"
+  assignee    String?  // Who is assigned to handle this inquiry
+  assignedAt  DateTime?
+  approvedAt  DateTime?
+  completedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  notes       String?  // For admin notes
+  adminNotes  String?  // For internal admin notes
+  estimatedCompletion DateTime? // Estimated completion date
+  actualCompletion DateTime? // Actual completion date
+  followUpDate DateTime? // When to follow up
+  source      String?  // "chat", "website", "phone", "email"
+  tags        String?  // Comma-separated tags for categorization
+}
+
+model ChatSession {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  sessionId String   @unique
+  messages  String   // JSON string of chat messages
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AdminUser {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  email     String   @unique
+  role      String   @default("admin") // "admin", "manager", "agent"
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model WorkflowLog {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  inquiryId   String
+  action      String   // "created", "assigned", "approved", "rejected", "completed"
+  performedBy String   // Admin user who performed the action
+  details     String?  // Additional details about the action
+  createdAt   DateTime @default(now())
+} 
