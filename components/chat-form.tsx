@@ -210,7 +210,12 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"div">) {
       recognitionRef.current.onresult = (event: any) => {
         const transcript = event.results[0][0].transcript;
         console.log('Speech recognized:', transcript);
-        setInput(transcript);
+        
+        // Directly send the message instead of setting it in input field
+        if (transcript.trim()) {
+          append({ role: "user", content: transcript.trim() });
+        }
+        
         setIsListening(false);
       };
 

@@ -47,6 +47,9 @@ export default function EmbedExample() {
 
   const customChatbotUrl = typeof window !== 'undefined' && customDomain
     ? `${window.location.origin}/?websiteId=${selectedWebsite.id}&origin=${encodeURIComponent(customDomain)}`
+
+
+    
     : chatbotUrl
 
   const iframeCode = `<!-- Embed ${selectedWebsite.name} Chatbot -->
