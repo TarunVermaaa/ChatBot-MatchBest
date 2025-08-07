@@ -427,7 +427,7 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"div">) {
                     Welcome to {websiteInfo?.name || 'Our Service'}!
                   </h2>
                   <p className="text-sm text-gray-600 mb-4 leading-relaxed">
-                     Hi, I'm your AI assistant, ready to help you with plans, channels, subscriptions, and more. 
+                     I'm your AI assistant, ready to help you with plans, channels, subscriptions, and more. 
                     Let's make your entertainment experience amazing! 🎬✨
                   </p>
                   
