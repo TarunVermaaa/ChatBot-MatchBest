@@ -427,7 +427,7 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"div">) {
                     Welcome to {websiteInfo?.name || 'Our Service'}!
                   </h2>
                   <p className="text-sm text-gray-600 mb-4 leading-relaxed">
-                    I'm your AI assistant, ready to help you with plans, channels, subscriptions, and more. 
+                     Hi, I'm your AI assistant, ready to help you with plans, channels, subscriptions, and more. 
                     Let's make your entertainment experience amazing! 🎬✨
                   </p>
                   
@@ -599,6 +599,7 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"div">) {
         <InquiryForm
           inquiryType={inquiryType}
           isOpen={showInquiryForm}
+
           onClose={() => setShowInquiryForm(false)}
           onSubmit={(data) => {
             console.log('Inquiry submitted:', data)
