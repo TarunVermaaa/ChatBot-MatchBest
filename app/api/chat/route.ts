@@ -17,10 +17,11 @@ export async function POST(req: Request) {
     }
 
     // Detect which website this request is coming from
-    const websiteConfig = detectWebsite(req)
+    // Pass websiteId from request body to detection function
+    const websiteConfig = detectWebsite(req, websiteId)
     
     // Log detection details for debugging
-    logDetectionDetails(req, websiteConfig)
+    logDetectionDetails(req, websiteConfig, websiteId)
 
     // Create website-specific context
     const { systemPrompt, websiteData, websiteInfo } = await createWebsiteContext(websiteConfig)

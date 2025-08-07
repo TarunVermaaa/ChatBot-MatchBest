@@ -15,8 +15,17 @@ function extractDomain(url: string): string | null {
 /**
  * Detect website configuration from various sources
  */
-export function detectWebsite(request: Request): WebsiteConfig {
-  // Method 1: Check for websiteId in the request body (highest priority)
+export function detectWebsite(request: Request, websiteIdFromBody?: string): WebsiteConfig {
+  // Method 1: Check for websiteId from request body (highest priority)
+  if (websiteIdFromBody) {
+    const config = getWebsiteConfigById(websiteIdFromBody)
+    if (config) {
+      console.log(`Website detected from request body websiteId: ${config.name}`)
+      return config
+    }
+  }
+
+  // Method 2: Check for websiteId in URL parameters
   const url = new URL(request.url)
   const websiteId = url.searchParams.get('websiteId')
   
@@ -28,7 +37,7 @@ export function detectWebsite(request: Request): WebsiteConfig {
     }
   }
 
-  // Method 2: Check the Origin header (for iframe embeddings)
+  // Method 3: Check the Origin header (for iframe embeddings)
   const origin = request.headers.get('origin')
   if (origin) {
     const domain = extractDomain(origin)
@@ -41,7 +50,7 @@ export function detectWebsite(request: Request): WebsiteConfig {
     }
   }
 
-  // Method 3: Check the Referer header (fallback)
+  // Method 4: Check the Referer header (fallback)
   const referer = request.headers.get('referer') || request.headers.get('referrer')
   if (referer) {
     const domain = extractDomain(referer)
@@ -54,7 +63,7 @@ export function detectWebsite(request: Request): WebsiteConfig {
     }
   }
 
-  // Method 4: Check the Host header (for direct access)
+  // Method 5: Check the Host header (for direct access)
   const host = request.headers.get('host')
   if (host) {
     const domain = host.toLowerCase().replace(/^www\./, '').split(':')[0] // Remove port if present
@@ -65,7 +74,7 @@ export function detectWebsite(request: Request): WebsiteConfig {
     }
   }
 
-  // Method 5: Parse iframe source from custom header (if implemented by frontend)
+  // Method 6: Parse iframe source from custom header (if implemented by frontend)
   const iframeSrc = request.headers.get('x-iframe-src')
   if (iframeSrc) {
     const domain = extractDomain(iframeSrc)
@@ -117,7 +126,7 @@ export async function createWebsiteContext(websiteConfig: WebsiteConfig): Promis
 /**
  * Log detection details for debugging
  */
-export function logDetectionDetails(request: Request, detectedConfig: WebsiteConfig): void {
+export function logDetectionDetails(request: Request, detectedConfig: WebsiteConfig, websiteIdFromBody?: string): void {
   const headers = {
     origin: request.headers.get('origin'),
     referer: request.headers.get('referer'),
@@ -127,6 +136,7 @@ export function logDetectionDetails(request: Request, detectedConfig: WebsiteCon
   }
 
   console.log('Website Detection Details:', {
+    websiteIdFromBody,
     detectedWebsite: {
       id: detectedConfig.id,
       name: detectedConfig.name,
