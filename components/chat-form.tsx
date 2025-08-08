@@ -432,27 +432,31 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"div">) {
                     Welcome to {websiteInfo?.name || 'Our Service'}!
                   </h2>
                   <p className="text-sm text-gray-600 mb-4 leading-relaxed">
-                    Hello, I'm your AI assistant, ready to help you with plans, channels, subscriptions, and more.
-                    Let's make your entertainment experience amazing! 🎬✨
+                    Hello, I'm your AI assistant, ready to help you with plans, subscriptions, and more.
+                    Let's make your experience amazing! ✨
                   </p>
 
                   {/* Quick Action Cards */}
                   <div className="grid grid-cols-2 gap-2 mb-4">
-                    <button
-                      onClick={() => executeCommand("What plans do you offer?")}
-                      className="group p-3 text-left bg-white/80 backdrop-blur-sm rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
-                    >
-                      <div className="flex items-center space-x-2">
-                        <div className="w-6 h-6 rounded-md bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-                          <Tv className="w-3 h-3 text-white" />
+                    {/* View Plans - Only show for AkashDTH */}
+                    {websiteId === 'akashdth' && (
+                      <button
+                        onClick={() => executeCommand("What plans do you offer?")}
+                        className="group p-3 text-left bg-white/80 backdrop-blur-sm rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <div className="w-6 h-6 rounded-md bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <Tv className="w-3 h-3 text-white" />
+                          </div>
+                          <div>
+                            <div className="font-semibold text-gray-900 text-xs">View Plans</div>
+                            <div className="text-xs text-gray-500">See packages</div>
+                          </div>
                         </div>
-                        <div>
-                          <div className="font-semibold text-gray-900 text-xs">View Plans</div>
-                          <div className="text-xs text-gray-500">See packages</div>
-                        </div>
-                      </div>
-                    </button>
+                      </button>
+                    )}
 
+                    {/* Book Demo - Show for all websites */}
                     <button
                       onClick={() => executeCommand("I want to book a demo")}
                       className="group p-3 text-left bg-white/80 backdrop-blur-sm rounded-lg border border-gray-200 hover:border-purple-300 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
@@ -468,21 +472,25 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"div">) {
                       </div>
                     </button>
 
-                    <button
-                      onClick={() => executeCommand("What channels are included?")}
-                      className="group p-3 text-left bg-white/80 backdrop-blur-sm rounded-lg border border-gray-200 hover:border-green-300 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
-                    >
-                      <div className="flex items-center space-x-2">
-                        <div className="w-6 h-6 rounded-md bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-                          <MessageCircle className="w-3 h-3 text-white" />
+                    {/* Channel List - Only show for AkashDTH */}
+                    {websiteId === 'akashdth' && (
+                      <button
+                        onClick={() => executeCommand("What channels are included?")}
+                        className="group p-3 text-left bg-white/80 backdrop-blur-sm rounded-lg border border-gray-200 hover:border-green-300 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <div className="w-6 h-6 rounded-md bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <MessageCircle className="w-3 h-3 text-white" />
+                          </div>
+                          <div>
+                            <div className="font-semibold text-gray-900 text-xs">Channel List</div>
+                            <div className="text-xs text-gray-500">Browse channels</div>
+                          </div>
                         </div>
-                        <div>
-                          <div className="font-semibold text-gray-900 text-xs">Channel List</div>
-                          <div className="text-xs text-gray-500">Browse channels</div>
-                        </div>
-                      </div>
-                    </button>
+                      </button>
+                    )}
 
+                    {/* Get Support - Show for all websites */}
                     <button
                       onClick={() => executeCommand("I need technical support")}
                       className="group p-3 text-left bg-white/80 backdrop-blur-sm rounded-lg border border-gray-200 hover:border-orange-300 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
