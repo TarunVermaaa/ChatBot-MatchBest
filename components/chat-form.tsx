@@ -41,7 +41,8 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"div">) {
         'streamplay': { name: 'StreamPlay', domain: 'streamplay.com' },
         'matchbestgroup': { name: 'MatchBest Group', domain: 'matchbestgroup.com' },
         'website3': { name: 'Website3', domain: 'website3.com' },
-        'cignal': { name: 'Cignal', domain: 'cignal.tv' }
+        'cignal': { name: 'Cignal', domain: 'cignal.tv' },
+        'ava': { name: 'AVA', domain: 'ava.matchbestsoftware.com' }
       }
 
       const currentWebsite = websiteConfigs[paramWebsiteId || 'akashdth']

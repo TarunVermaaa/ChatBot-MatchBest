@@ -15,7 +15,7 @@ const WEBSITE_EXAMPLES = [
     color: 'bg-blue-500'
   },
   {
-    id: 'streamplay', 
+    id: 'streamplay',
     name: 'StreamPlay',
     domain: 'streamplay.com',
     url: 'https://streamplay.com',
@@ -23,7 +23,7 @@ const WEBSITE_EXAMPLES = [
   },
   {
     id: 'matchbestgroup',
-    name: 'MatchBest Group', 
+    name: 'MatchBest Group',
     domain: 'matchbestgroup.com',
     url: 'https://matchbestgroup.com',
     color: 'bg-green-500'
@@ -31,17 +31,24 @@ const WEBSITE_EXAMPLES = [
   {
     id: 'cignal',
     name: 'Cignal',
-    domain: 'cignal.tv', 
+    domain: 'cignal.tv',
     url: 'https://cignal.tv',
     color: 'bg-purple-500'
+  },
+  {
+    id: 'ava',
+    name: 'AVA',
+    domain: 'ava.matchbestsoftware.com',
+    url: 'https://ava.matchbestsoftware.com',
+    color: 'bg-violet-500'
   }
 ]
 
 export default function EmbedExample() {
   const [selectedWebsite, setSelectedWebsite] = useState(WEBSITE_EXAMPLES[0])
   const [customDomain, setCustomDomain] = useState('')
-  
-  const chatbotUrl = typeof window !== 'undefined' 
+
+  const chatbotUrl = typeof window !== 'undefined'
     ? `${window.location.origin}/?websiteId=${selectedWebsite.id}`
     : `http://localhost:3000/?websiteId=${selectedWebsite.id}`
 
@@ -49,7 +56,7 @@ export default function EmbedExample() {
     ? `${window.location.origin}/?websiteId=${selectedWebsite.id}&origin=${encodeURIComponent(customDomain)}`
 
 
-    
+
     : chatbotUrl
 
   const iframeCode = `<!-- Embed ${selectedWebsite.name} Chatbot -->
@@ -88,13 +95,12 @@ export default function EmbedExample() {
             </CardHeader>
             <CardContent className="space-y-4">
               {WEBSITE_EXAMPLES.map((website) => (
-                <div 
+                <div
                   key={website.id}
-                  className={`p-4 border rounded-lg cursor-pointer transition-all ${
-                    selectedWebsite.id === website.id 
-                      ? 'border-blue-500 bg-blue-50' 
+                  className={`p-4 border rounded-lg cursor-pointer transition-all ${selectedWebsite.id === website.id
+                      ? 'border-blue-500 bg-blue-50'
                       : 'border-gray-200 hover:border-gray-300'
-                  }`}
+                    }`}
                   onClick={() => setSelectedWebsite(website)}
                 >
                   <div className="flex items-center justify-between">
@@ -143,7 +149,7 @@ export default function EmbedExample() {
               <div className="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm overflow-x-auto">
                 <pre>{iframeCode}</pre>
               </div>
-              <Button 
+              <Button
                 onClick={() => copyToClipboard(iframeCode)}
                 className="mt-4 w-full"
               >
@@ -174,8 +180,8 @@ export default function EmbedExample() {
                   width="100%"
                   height="600"
                   frameBorder="0"
-                  style={{ 
-                    border: 'none', 
+                  style={{
+                    border: 'none',
                     borderRadius: '10px',
                     boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
                   }}
@@ -196,14 +202,14 @@ export default function EmbedExample() {
                   The chatbot automatically detects which website it's embedded on using the iframe's origin/referrer headers.
                 </p>
               </div>
-              
+
               <div className="space-y-2">
                 <h4 className="font-medium">2. Dynamic Content</h4>
                 <p className="text-sm text-gray-600">
                   Based on the detected website, it loads the appropriate data, system prompts, and branding.
                 </p>
               </div>
-              
+
               <div className="space-y-2">
                 <h4 className="font-medium">3. Manual Override</h4>
                 <p className="text-sm text-gray-600">

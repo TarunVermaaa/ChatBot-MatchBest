@@ -12,20 +12,21 @@ export function Header() {
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search)
       const websiteId = urlParams.get('websiteId')
-      
+
       const websiteNames: Record<string, string> = {
         'akashdth': 'AkashDTH TV',
         'streamplay': 'StreamPlay',
         'matchbestgroup': 'MatchBest Group',
         'website3': 'Website3',
-        'cignal': 'Cignal TV'
+        'cignal': 'Cignal TV',
+        'ava': 'AVA'
       }
-      
+
       setWebsiteName(websiteNames[websiteId || 'akashdth'] || 'AI Assistant')
     }
   }, [])
   return (
-    <header className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 shadow-lg border-b border-blue-500/20 flex-shrink-0">
+    <header className="sticky top-0 z-50 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 shadow-lg border-b border-blue-500/20 flex-shrink-0">
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between min-h-[60px]">
           <div className="flex items-center space-x-3">
@@ -46,12 +47,12 @@ export function Header() {
               </div>
             </Link>
           </div>
-          
+
           <nav className="flex items-center space-x-2 flex-shrink-0">
             <Link href="/">
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 className="flex items-center space-x-2 text-white hover:text-blue-100 hover:bg-white/10 rounded-lg transition-all duration-200 h-9 px-3"
               >
                 <MessageSquare className="h-4 w-4 flex-shrink-0" />
@@ -59,9 +60,9 @@ export function Header() {
               </Button>
             </Link>
             <Link href="/dashboard">
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 className="flex items-center space-x-2 text-white hover:text-blue-100 hover:bg-white/10 rounded-lg transition-all duration-200 h-9 px-3"
               >
                 <BarChart3 className="h-4 w-4 flex-shrink-0" />
