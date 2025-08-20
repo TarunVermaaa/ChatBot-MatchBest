@@ -56,9 +56,19 @@ export default function Dashboard() {
     try {
       const response = await fetch('/api/inquiry')
       const data = await response.json()
-      setInquiries(data.inquiries || [])
+
+      // Ensure we always have an array
+      if (data && Array.isArray(data.inquiries)) {
+        setInquiries(data.inquiries)
+      } else if (data && Array.isArray(data)) {
+        setInquiries(data)
+      } else {
+        setInquiries([])
+        console.warn('No inquiries data received or invalid format:', data)
+      }
     } catch (error) {
       console.error('Error fetching inquiries:', error)
+      setInquiries([]) // Ensure it's always an array even on error
     } finally {
       setLoading(false)
     }
@@ -66,12 +76,12 @@ export default function Dashboard() {
 
   const deleteInquiry = async (id: string) => {
     if (!confirm('Are you sure you want to delete this inquiry?')) return
-    
+
     try {
       const response = await fetch(`/api/inquiry/${id}`, {
         method: 'DELETE'
       })
-      
+
       if (response.ok) {
         fetchInquiries()
       }
@@ -121,11 +131,13 @@ export default function Dashboard() {
   }
 
   // Filter inquiries based on search and filters
-  const filteredInquiries = inquiries.filter(inquiry => {
-    const matchesSearch = 
-      inquiry.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      inquiry.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      inquiry.inquiryType.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  const filteredInquiries = (inquiries || []).filter(inquiry => {
+    if (!inquiry) return false
+
+    const matchesSearch =
+      (inquiry.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (inquiry.email || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (inquiry.inquiryType || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (inquiry.message && inquiry.message.toLowerCase().includes(searchTerm.toLowerCase()))
 
     const matchesStatus = statusFilter === 'all' || inquiry.status === statusFilter
@@ -153,7 +165,7 @@ export default function Dashboard() {
   return (
     <div className="container mx-auto p-6">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">AkashDTH TV Dashboard</h1>
+        <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
         <p className="text-gray-600">Manage user inquiries and workflow</p>
       </div>
 
@@ -225,7 +237,7 @@ export default function Dashboard() {
               />
             </div>
           </div>
-          
+
           <div>
             <label className="text-sm font-medium">Status</label>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -288,57 +300,57 @@ export default function Dashboard() {
         </TabsList>
 
         <TabsContent value="all" className="space-y-4">
-          <InquiriesList 
-            inquiries={filteredInquiries} 
+          <InquiriesList
+            inquiries={filteredInquiries}
             onManage={(inquiry) => {
               setSelectedInquiry(inquiry)
               setShowApprovalDialog(true)
             }}
-            onDelete={deleteInquiry} 
+            onDelete={deleteInquiry}
           />
         </TabsContent>
 
         <TabsContent value="pending" className="space-y-4">
-          <InquiriesList 
-            inquiries={pendingInquiries} 
+          <InquiriesList
+            inquiries={pendingInquiries}
             onManage={(inquiry) => {
               setSelectedInquiry(inquiry)
               setShowApprovalDialog(true)
             }}
-            onDelete={deleteInquiry} 
+            onDelete={deleteInquiry}
           />
         </TabsContent>
 
         <TabsContent value="in_progress" className="space-y-4">
-          <InquiriesList 
-            inquiries={inProgressInquiries} 
+          <InquiriesList
+            inquiries={inProgressInquiries}
             onManage={(inquiry) => {
               setSelectedInquiry(inquiry)
               setShowApprovalDialog(true)
             }}
-            onDelete={deleteInquiry} 
+            onDelete={deleteInquiry}
           />
         </TabsContent>
 
         <TabsContent value="completed" className="space-y-4">
-          <InquiriesList 
-            inquiries={completedInquiries} 
+          <InquiriesList
+            inquiries={completedInquiries}
             onManage={(inquiry) => {
               setSelectedInquiry(inquiry)
               setShowApprovalDialog(true)
             }}
-            onDelete={deleteInquiry} 
+            onDelete={deleteInquiry}
           />
         </TabsContent>
 
         <TabsContent value="rejected" className="space-y-4">
-          <InquiriesList 
-            inquiries={rejectedInquiries} 
+          <InquiriesList
+            inquiries={rejectedInquiries}
             onManage={(inquiry) => {
               setSelectedInquiry(inquiry)
               setShowApprovalDialog(true)
             }}
-            onDelete={deleteInquiry} 
+            onDelete={deleteInquiry}
           />
         </TabsContent>
       </Tabs>
@@ -359,11 +371,11 @@ export default function Dashboard() {
   )
 }
 
-function InquiriesList({ 
-  inquiries, 
-  onManage, 
-  onDelete 
-}: { 
+function InquiriesList({
+  inquiries,
+  onManage,
+  onDelete
+}: {
   inquiries: UserInquiry[]
   onManage: (inquiry: UserInquiry) => void
   onDelete: (id: string) => void

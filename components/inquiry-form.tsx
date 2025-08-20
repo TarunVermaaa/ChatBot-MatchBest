@@ -125,17 +125,21 @@ export function InquiryForm({ inquiryType, isOpen, onClose, onSubmit }: InquiryF
       case 'consultation': return 'Schedule Consultation'
       case 'support': return 'Get Support'
       case 'subscription': return 'Subscribe Now'
+      case 'contact': return 'Contact Us'
+      case 'other': return 'Other Inquiry'
       default: return 'Contact Us'
     }
   }
 
   const getInquiryDescription = (type: string) => {
     switch (type) {
-      case 'demo': return 'Get a personalized demo of our AkashDTH TV services and see how we can help you.'
+      case 'demo': return 'Get a personalized demo of our services and see how we can help you.'
       case 'trial': return 'Start your free trial and experience the best in satellite TV entertainment.'
       case 'consultation': return 'Schedule a consultation with our experts to find the perfect plan for you.'
-      case 'support': return 'Get technical support and assistance with your AkashDTH service.'
-      case 'subscription': return 'Subscribe to AkashDTH TV and enjoy premium entertainment at home.'
+      case 'support': return 'Get technical support and assistance with your service.'
+      case 'subscription': return 'Subscribe and enjoy premium entertainment at home.'
+      case 'contact': return 'Get in touch with us for general inquiries and information.'
+      case 'other': return 'Let us know how we can help you with your specific needs.'
       default: return 'Get in touch with us for any questions or assistance.'
     }
   }
@@ -197,6 +201,24 @@ export function InquiryForm({ inquiryType, isOpen, onClose, onSubmit }: InquiryF
                 className="rounded-lg border-gray-200 focus:border-blue-500 focus:ring-blue-500/20"
               />
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">Inquiry Type *</label>
+            <Select 
+              value={formData.inquiryType} 
+              onValueChange={(value) => setFormData({ ...formData, inquiryType: value })}
+            >
+              <SelectTrigger className="rounded-lg border-gray-200 focus:border-blue-500 focus:ring-blue-500/20">
+                <SelectValue placeholder="Select inquiry type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="support">Support</SelectItem>
+                <SelectItem value="demo">Demo</SelectItem>
+                <SelectItem value="contact">Contact</SelectItem>
+                <SelectItem value="other">Other</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
