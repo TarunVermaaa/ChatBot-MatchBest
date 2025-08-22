@@ -19,7 +19,8 @@ export function Header() {
         'matchbestgroup': 'MatchBest Group',
         'website3': 'Website3',
         'cignal': 'Cignal TV',
-        'ava': 'AVA'
+        'ava': 'AVA',
+        'echef': 'Echef Bot'
       }
 
       setWebsiteName(websiteNames[websiteId || 'akashdth'] || 'AI Assistant')

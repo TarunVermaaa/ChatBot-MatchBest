@@ -90,6 +90,18 @@ export const WEBSITE_CONFIGS: Record<string, WebsiteConfig> = {
       logo: "/ava-logo.svg",
     },
   },
+  echef: {
+    id: "echef",
+    name: "Echef",
+    domain: "echef.ai",
+    description: "AI-powered culinary assistant for chefs and restaurants",
+    dataFile: "echef.md",
+    systemPromptFile: "echef-system-prompt.md",
+    theme: {
+      primaryColor: "#f59e0b",
+      logo: "/echef-logo.svg",
+    },
+  },
 };
 
 /**

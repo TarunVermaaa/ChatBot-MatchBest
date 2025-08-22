@@ -41,6 +41,13 @@ const WEBSITE_EXAMPLES = [
     domain: 'ava.matchbestsoftware.com',
     url: 'https://ava.matchbestsoftware.com',
     color: 'bg-violet-500'
+  },
+  {
+    id: 'echef',
+    name: 'Echef',
+    domain: 'echef.ai',
+    url: 'https://echef.ai',
+    color: 'bg-orange-500'
   }
 ]
 
@@ -98,8 +105,8 @@ export default function EmbedExample() {
                 <div
                   key={website.id}
                   className={`p-4 border rounded-lg cursor-pointer transition-all ${selectedWebsite.id === website.id
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                    ? 'border-blue-500 bg-blue-50'
+                    : 'border-gray-200 hover:border-gray-300'
                     }`}
                   onClick={() => setSelectedWebsite(website)}
                 >
