@@ -2,7 +2,7 @@
 
 This is MatchBest Group's data. You can place your content here.
 
-# Build the Future.  With Us.
+# Build the Future. With Us.
 
 We craft world-class digital products, AI solutions, and secure cloud platforms for tomorrow's leaders.
 
@@ -124,6 +124,13 @@ We launch, support, and optimize your project for long-term success.
 ## Technologies We Use
 
 ReactNode.jsPythonAWSAzureDockerKubernetesTensorFlowMongoDBTypeScriptJavaScriptExpress.jsHTML5CSS3BootstrapTailwind CSSGraphQLMySQLPostgreSQLReduxJestGitGitHubFigmaNext.jsAIMLAndroid
+
+## Contact & Social Media
+
+- **Website:** matchbest.com/contact
+- **Instagram:** [@matchbest.software](https://www.instagram.com/matchbest.software?igsh=MWVxZnBwaDNjNXlhbg==) - Follow for tech updates and project showcases!
+- **Support:** Free consultation available
+- **Services:** Web Development, AI Solutions, Cloud Platforms
 
 ## Frequently Asked Questions
 

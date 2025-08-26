@@ -102,6 +102,19 @@ export const WEBSITE_CONFIGS: Record<string, WebsiteConfig> = {
       logo: "/echef-logo.svg",
     },
   },
+  matchbestsoftware: {
+    id: "matchbestsoftware",
+    name: "MatchBest Software",
+    domain: "matchbestsoftware.com",
+    description:
+      "Leading provider of innovative software solutions for digital transformation",
+    dataFile: "matchbestsoftware.md",
+    systemPromptFile: "matchbestsoftware-system-prompt.md",
+    theme: {
+      primaryColor: "#3b82f6",
+      logo: "/matchbestsoftware-logo.svg",
+    },
+  },
 };
 
 /**

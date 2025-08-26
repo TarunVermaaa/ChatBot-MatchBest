@@ -1,14 +1,13 @@
-import { type CoreMessage, streamText } from "ai";
-import { createOpenRouter } from "@openrouter/ai-sdk-provider";
+import { type Message } from "ai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import {
   detectWebsite,
   createWebsiteContext,
   logDetectionDetails,
 } from "@/lib/website-detection";
 
-const openrouter = createOpenRouter({
-  apiKey: process.env.OPENROUTER_API_KEY,
-});
+// Initialize Gemini client
+const genAI = new GoogleGenerativeAI("AIzaSyBBFkz39YByphNIBsrWuv3GO83jogelLHQ");
 
 export async function POST(req: Request) {
   try {
@@ -16,65 +15,75 @@ export async function POST(req: Request) {
       messages,
       websiteId,
       lang,
-    }: { messages: CoreMessage[]; websiteId?: string; lang?: string } =
+    }: { messages: Message[]; websiteId?: string; lang?: string } =
       await req.json();
 
     // Check if API key is available
-    if (!process.env.OPENROUTER_API_KEY) {
-      console.error("OPENROUTER_API_KEY is not set");
+    const GEMINI_API_KEY = "AIzaSyBBFkz39YByphNIBsrWuv3GO83jogelLHQ";
+    if (!GEMINI_API_KEY) {
+      console.error("GEMINI_API_KEY is not set");
       return Response.json(
-        { error: "OPENROUTER_API_KEY is not configured" },
+        { error: "GEMINI_API_KEY is not configured" },
         { status: 500 }
       );
     }
 
-    // Detect which website this request is coming from
-    // Pass websiteId from request body to detection function
-    const websiteConfig = detectWebsite(req, websiteId);
-
-    // Log detection details for debugging
-    logDetectionDetails(req, websiteConfig, websiteId);
-
-    // Create website-specific context
-    const { systemPrompt, websiteData, websiteInfo } =
-      await createWebsiteContext(websiteConfig);
+    // Create website context
+    const websiteInfo = await detectWebsite(req, websiteId);
+    logDetectionDetails(req, websiteInfo, websiteId);
+    const { systemPrompt, websiteData, websiteInfo: detectedInfo } = await createWebsiteContext(websiteInfo);
 
     console.log(
-      `Making request to OpenRouter for ${websiteInfo.name} with ${messages.length} messages`
+      `Making request to Gemini for ${detectedInfo.name} with ${messages.length} messages`
     );
 
-    // Prepare the full system prompt with website data
-    const fullSystemPrompt = `${systemPrompt}
-
-## Website Data and Information
-
-${websiteData}
-
-## Important Instructions
-- You are specifically representing ${websiteInfo.name}
-- Only provide information about ${websiteInfo.name} services and offerings
-- If asked about other companies or services, politely redirect to ${websiteInfo.name}
-- Use the website data provided above to answer questions accurately
-- Always stay in character as a ${websiteInfo.name} representative`;
-
-    // Handle language preference
+    // Language detection and instruction
     let languageInstruction = "";
-    if (lang === "bn") {
-      languageInstruction = "\nReply in Bengali.";
+    if (lang === "hi") {
+      languageInstruction = "\nReply in Hindi (Hinglish is also acceptable).";
     } else if (lang === "tl") {
       languageInstruction = "\nReply in Tagalog.";
     }
 
     // Prepare the final system prompt with website-specific data and language preference
-    const finalSystemPrompt = `${fullSystemPrompt}${languageInstruction}`;
+    const fullSystemPrompt = `${systemPrompt}\n\n## Website Data\n${websiteData}${languageInstruction}`;
 
-    const result = await streamText({
-      model: openrouter("meta-llama/llama-3.3-70b-instruct"),
-      system: finalSystemPrompt,
-      messages,
+    console.log(
+      `Making streaming request to Gemini for ${detectedInfo.name}...`
+    );
+
+    // Get the model with system instruction
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-1.5-flash",
+      systemInstruction: fullSystemPrompt
     });
 
-    return result.toDataStreamResponse();
+    // Convert messages to Gemini format
+    const lastUserMessage = messages[messages.length - 1]?.content || "";
+
+    // Generate streaming response
+    const result = await model.generateContentStream(lastUserMessage);
+
+    // Create a readable stream
+    const stream = new ReadableStream({
+      async start(controller) {
+        try {
+          for await (const chunk of result.stream) {
+            const chunkText = chunk.text();
+            controller.enqueue(new TextEncoder().encode(chunkText));
+          }
+          controller.close();
+        } catch (error) {
+          controller.error(error);
+        }
+      },
+    });
+
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+      },
+    });
   } catch (error) {
     console.error("Error in chat API route:", error);
 

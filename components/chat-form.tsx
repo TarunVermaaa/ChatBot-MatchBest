@@ -43,7 +43,8 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"div">) {
         'website3': { name: 'Website3', domain: 'website3.com' },
         'cignal': { name: 'Cignal', domain: 'cignal.tv' },
         'ava': { name: 'AVA', domain: 'ava.matchbestsoftware.com' },
-        'echef': { name: 'Echef Bot', domain: 'echef.ai' }
+        'echef': { name: 'Echef Bot', domain: 'echef.ai' },
+        'matchbestsoftware': { name: 'MatchBest Software', domain: 'matchbestsoftware.com' }
       }
 
       const currentWebsite = websiteConfigs[paramWebsiteId || 'akashdth']
@@ -56,7 +57,7 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"div">) {
     body: {
       websiteId: websiteId
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error("Chat error details:", error)
     },
   })
@@ -306,7 +307,7 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"div">) {
 
   const messageList = (
     <div ref={messagesContainerRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
-      {messages.map((message, index) => {
+      {messages.map((message: any, index: number) => {
         const isUser = message.role === "user"
         const isLastMessage = index === messages.length - 1
         const showAvatar = true

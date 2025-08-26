@@ -158,6 +158,15 @@ Notes: one-time setup fees may apply; enterprise pricing and SLAs are negotiated
 
 ---
 
+## Contact & Social Media
+
+- **Website:** ava.matchbestsoftware.com
+- **Instagram:** [@matchbest88001](https://www.instagram.com/matchbest88001?igsh=MWpyOWJiY2QweGFuZA%3D%3D&utm_source=qr) - Follow for latest updates and behind-the-scenes!
+- **Support:** Available 24/7 via website chat or Instagram DM
+- **Demos:** Book free consultation through website or Instagram
+
+---
+
 ## Short prompts for the assistant (use when answering user questions)
 
 - "Short: What is AVA?" → "AVA is a multilingual AI assistant that automates customer conversations across website, WhatsApp, and Instagram, handling FAQs, bookings, payments, and support."

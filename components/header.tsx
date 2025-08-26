@@ -31,7 +31,7 @@ export function Header() {
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between min-h-[60px]">
           <div className="flex items-center space-x-3">
-            <Link href="/" className="flex items-center space-x-3 group">
+            <Link href="" className="flex items-center space-x-3 group">
               <div className="relative flex-shrink-0">
                 <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
                   <Tv className="w-5 h-5 text-white" />
@@ -51,24 +51,24 @@ export function Header() {
 
           <nav className="flex items-center space-x-2 flex-shrink-0">
             <Link href="/">
-              <Button
+              {/* <Button
                 variant="ghost"
                 size="sm"
                 className="flex items-center space-x-2 text-white hover:text-blue-100 hover:bg-white/10 rounded-lg transition-all duration-200 h-9 px-3"
               >
                 <MessageSquare className="h-4 w-4 flex-shrink-0" />
                 <span className="hidden sm:inline text-sm">Chat Assistant</span>
-              </Button>
+              </Button> */}
             </Link>
             <Link href="/dashboard">
-              <Button
+              {/* <Button
                 variant="ghost"
                 size="sm"
                 className="flex items-center space-x-2 text-white hover:text-blue-100 hover:bg-white/10 rounded-lg transition-all duration-200 h-9 px-3"
               >
                 <BarChart3 className="h-4 w-4 flex-shrink-0" />
                 <span className="hidden sm:inline text-sm">Dashboard</span>
-              </Button>
+              </Button> */}
             </Link>
             <div className="hidden sm:flex items-center space-x-2 ml-3 pl-3 border-l border-white/20">
               <div className="flex items-center space-x-1 text-xs text-blue-100/80">
