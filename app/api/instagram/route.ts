@@ -7,6 +7,25 @@ import { join } from "path";
 // Initialize Gemini client
 const genAI = new GoogleGenerativeAI("AIzaSyBBFkz39YByphNIBsrWuv3GO83jogelLHQ");
 
+// In-memory storage for user conversation states
+const userStates = new Map<
+  string,
+  {
+    step:
+      | "awaiting_name"
+      | "awaiting_email"
+      | "awaiting_number"
+      | "awaiting_inquiry_type"
+      | "completed"
+      | null;
+    name?: string;
+    email?: string;
+    number?: string;
+    inquiryType?: string;
+    originalRequest?: string;
+  }
+>();
+
 // GET request for webhook verification
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -37,10 +56,58 @@ export async function POST(req: NextRequest) {
             const messageText = event.message.text;
             console.log(`Message from ${senderId}: ${messageText}`);
 
-            // Generate AI response using MatchBest data
-            const aiResponse = await generateAIResponse(messageText);
+            // Check if messageText exists before processing
+            if (!messageText) {
+              console.log("No message text found, skipping...");
+              continue;
+            }
 
-            // Send the AI reply
+            // Check for special commands to start the conversational form
+            const formTriggers = [
+              "support",
+              "demo",
+              "contact",
+              "help",
+              "business inquiry",
+              "get in touch",
+              "quote",
+              "pricing",
+              "consultation",
+            ];
+            const shouldStartForm = formTriggers.some((trigger) =>
+              messageText.toLowerCase().includes(trigger.toLowerCase())
+            );
+
+            if (shouldStartForm && !userStates.has(senderId)) {
+              // Start the conversational form
+              userStates.set(senderId, {
+                step: "awaiting_name",
+                originalRequest: messageText,
+              });
+
+              await sendReply(
+                senderId,
+                "Perfect! I'd love to help you get in touch with our team. 📝\n\nLet me collect some quick details to ensure you get the best assistance.\n\nFirst, what's your name?"
+              );
+              continue;
+            }
+
+            // Handle form steps
+            const userState = userStates.get(senderId);
+            if (userState && userState.step !== "completed") {
+              const response = await handleFormStep(
+                senderId,
+                messageText,
+                userState
+              );
+              if (response) {
+                await sendReply(senderId, response);
+                continue;
+              }
+            }
+
+            // If not in form flow, handle normally with AI
+            const aiResponse = await generateAIResponse(messageText);
             await sendReply(senderId, aiResponse);
           }
         }
@@ -52,6 +119,92 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error("Error in POST handler:", error);
     return new NextResponse("Internal Server Error", { status: 500 });
+  }
+}
+
+// Function to handle conversational form steps
+async function handleFormStep(
+  senderId: string,
+  messageText: string,
+  userState: any
+): Promise<string | null> {
+  const cleanText = messageText.trim();
+
+  switch (userState.step) {
+    case "awaiting_name":
+      if (cleanText.length < 2) {
+        return "Please enter a valid name so we can assist you properly! 😊";
+      }
+      userState.name = cleanText;
+      userState.step = "awaiting_email";
+      userStates.set(senderId, userState);
+      return `Thanks ${cleanText}! 😊\n\nWhat's your email address?`;
+
+    case "awaiting_email":
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(cleanText)) {
+        return "Please enter a valid email address (e.g., name@company.com) 📧";
+      }
+      userState.email = cleanText;
+      userState.step = "awaiting_number";
+      userStates.set(senderId, userState);
+      return "Great! What's your phone number? 📱";
+
+    case "awaiting_number":
+      const phoneRegex = /^[\d\s\+\-\(\)]{7,}$/;
+      if (!phoneRegex.test(cleanText)) {
+        return "Please enter a valid phone number 📱";
+      }
+      userState.number = cleanText;
+      userState.step = "awaiting_inquiry_type";
+      userStates.set(senderId, userState);
+      return "Perfect! What type of assistance do you need?\n\n1️⃣ Demo\n2️⃣ Support\n3️⃣ Contact\n4️⃣ Other\n\nJust type the number or describe your need! 🚀";
+
+    case "awaiting_inquiry_type":
+      let inquiryType = cleanText.toLowerCase(); // Convert to lowercase for backend
+      if (cleanText === "1") inquiryType = "demo";
+      else if (cleanText === "2") inquiryType = "support";
+      else if (cleanText === "3") inquiryType = "contact";
+      else if (cleanText === "4") inquiryType = "other";
+      else {
+        // If user typed custom text, convert to lowercase and map to valid values
+        const lowerText = cleanText.toLowerCase();
+        if (lowerText.includes("demo")) inquiryType = "demo";
+        else if (lowerText.includes("support") || lowerText.includes("help"))
+          inquiryType = "support";
+        else if (
+          lowerText.includes("contact") ||
+          lowerText.includes("business")
+        )
+          inquiryType = "contact";
+        else inquiryType = "other";
+      }
+
+      userState.inquiryType = inquiryType;
+      userState.step = "completed";
+      userStates.set(senderId, userState);
+
+      // Push lead to CRM
+      await pushInstagramLeadToCRM({
+        name: userState.name,
+        email: userState.email,
+        phone: userState.number,
+        inquiryType: userState.inquiryType,
+        originalRequest: userState.originalRequest,
+        instagramUsername: userState.instagramUsername || "", // We don't get username from webhook
+        instagramUserId: senderId,
+        timestamp: new Date().toISOString(),
+      });
+
+      // Clean up after some time (optional)
+      setTimeout(() => {
+        userStates.delete(senderId);
+      }, 30000); // Remove after 30 seconds
+
+      return `Awesome! Here's what I've collected:\n\n👤 Name: ${userState.name}\n📧 Email: ${userState.email}\n📱 Phone: ${userState.number}\n🎯 Interest: ${userState.inquiryType}\n\nOur team will contact you within 24 hours! 🚀\n\nFor immediate assistance, visit matchbestsoftware.com and use the chat desk at bottom right! 💬`;
+
+    default:
+      return null;
   }
 }
 
@@ -99,18 +252,20 @@ ${websiteData}
 
 ## Instagram DM Response Guidelines
 - You are AVA, the official MatchBest Group AI assistant on Instagram
-- Only introduce yourself as "AVA" if the user seems new or asks who you are
-- DO NOT start every message with "Hi! I'm AVA" - be conversational and natural
+- Be PROFESSIONAL and business-focused in your communication
+- DO NOT use casual greetings like "Hey there! 👋" or "Hello!"
+- Start responses directly with relevant information or solutions
+- Only introduce yourself as "AVA" if the user asks who you are
 - Represent MatchBest Group's 3 verticals: MatchBest Technologies, StreamPlay AI, and Maverick AI
 - Keep responses under 280 characters (Instagram DM limit)
-- Use 1-2 relevant emojis per message
-- Be conversational, friendly, and professional
+- Use minimal emojis (max 1 per message) and only when relevant
+- Be conversational but maintain professionalism
 - Always end with a call-to-action or question to keep engagement
 - For complex queries, offer to connect with our team
-- Use Hinglish when appropriate for Indian audience
-- Answer directly without unnecessary introductions
-- Keep responses natural and conversational, not robotic
-- For support/demo/contact requests, always direct to matchbestsoftware.com chat desk
+- Answer directly without unnecessary casual introductions
+- Keep responses business-focused and solution-oriented
+- For ANY contact/support/help/demo requests, ALWAYS direct to matchbestsoftware.com chat desk
+- Never mention matchbest.com/contact - always use matchbestsoftware.com chat desk
 
 ## Key Services to Highlight:
 - Web & App Development 🚀
@@ -120,20 +275,24 @@ ${websiteData}
 - Cloud & Cybersecurity ☁️
 
 ## Quick Responses for Common Queries:
-- Pricing: "Costs vary by project scope. Let's discuss your needs! DM us or visit matchbest.com/contact"
-- Timeline: "Timelines depend on complexity. Typically 2-12 weeks. What's your project about?"
-- Technologies: "We use React, Node.js, Python, AWS, AI/ML, and more cutting-edge tech!"
-- Contact: "Reach us at matchbest.com/contact or keep chatting here! We're here to help 😊"
-- Support/Help/Demo/Feedback: "For detailed support, visit matchbestsoftware.com and use the chat desk at bottom right 💬 Our team will reach out to you directly!"
-- Technical Issues: "Visit matchbestsoftware.com for technical support via our chat desk. Our experts are ready to help! 🛠️"
-- Book Demo: "Want a demo? Head to matchbestsoftware.com and chat with our team via the bottom-right chat desk 🚀"
+- Pricing: "Costs vary by project scope. Visit matchbestsoftware.com and use the chat desk at bottom right to discuss your needs 💬"
+- Timeline: "Timelines depend on complexity. Typically 2-12 weeks. Submit your project details via matchbestsoftware.com chat desk for accurate estimates."
+- Technologies: "We use React, Node.js, Python, AWS, AI/ML, and more cutting-edge tech! Visit matchbestsoftware.com chat desk for technical discussions."
+- Contact: "Visit matchbestsoftware.com and use the chat desk at bottom right 💬 Our team will reach out to you directly!"
+- Support/Help/Demo/Feedback: "Visit matchbestsoftware.com and submit your request via the chat desk at bottom right. Our team will contact you directly!"
+- Technical Issues: "For technical support, visit matchbestsoftware.com and use the chat desk at bottom right. Our experts will assist you!"
+- Book Demo: "To book a demo, visit matchbestsoftware.com and submit your request via the bottom-right chat desk!"
+- Get Started: "Visit matchbestsoftware.com and use the chat desk at bottom right to submit your project requirements!"
 
 ## Response Style:
-- Answer the user's question directly
-- Be helpful and informative without over-introducing
-- Only mention you're AVA if relevant to the conversation
-- Keep it natural and engaging
-- Focus on solving their problem first`;
+- Start with direct answers to user questions
+- Be professional and business-focused
+- NO casual greetings or unnecessary pleasantries
+- Provide specific, actionable information
+- Only mention you're AVA if directly asked
+- Focus on business solutions and value proposition
+- Keep responses concise and to the point
+- ALWAYS direct contact requests to matchbestsoftware.com chat desk, never matchbest.com/contact`;
 
     console.log("Generating optimized Instagram response for MatchBest...");
 
@@ -158,11 +317,11 @@ ${websiteData}
 // Fallback responses for when AI fails
 function getRandomFallbackResponse(): string {
   const fallbacks = [
-    "Hi! I'm AVA, MatchBest's AI assistant 🤖 I'm here to help with web development, AI solutions, and digital transformation! What can I help you with?",
-    "Hey there! 👋 I'm AVA from MatchBest Group. We specialize in cutting-edge tech solutions. Tell me about your project - web app, AI integration, or OTT platform?",
-    "Hello! 😊 I'm AVA, and we build amazing digital products at MatchBest Group. Need help with development, AI automation, or cloud solutions? Let's chat!",
-    "Hi! I'm AVA from MatchBest Group 🚀 We create world-class web apps, AI solutions, and enterprise platforms. How can we help your business grow?",
-    "Hey! 💼 I'm AVA, and MatchBest Group offers complete digital transformation services. What's your business challenge? Let's solve it together!",
+    "We provide web development, AI solutions, and digital transformation services. What specific project are you working on?",
+    "MatchBest Group specializes in cutting-edge technology solutions. Are you looking for web development, AI integration, or OTT platforms?",
+    "Our team builds enterprise-grade digital products. What business challenge can we help you solve?",
+    "MatchBest Group creates custom software solutions for businesses. What's your project requirement?",
+    "We offer complete digital transformation services. Which area interests you - development, AI automation, or cloud solutions?",
   ];
 
   return fallbacks[Math.floor(Math.random() * fallbacks.length)];
@@ -196,5 +355,50 @@ async function sendReply(recipientId: string, text: string) {
     console.log("Reply sent response:", data);
   } catch (error) {
     console.error("Failed to send reply:", error);
+  }
+}
+
+// Function to push Instagram lead to CRM
+async function pushInstagramLeadToCRM(leadData: {
+  name: string;
+  email: string;
+  phone: string;
+  inquiryType: string;
+  originalRequest: string;
+  instagramUsername: string;
+  instagramUserId: string;
+  timestamp: string;
+}) {
+  try {
+    console.log("Pushing Instagram lead to CRM:", leadData);
+
+    // Check if CRM is configured
+    if (!process.env.CRM_URL || !process.env.CRM_WEBHOOK_KEY) {
+      console.warn("CRM not configured for Instagram leads");
+      console.log("Instagram lead captured locally:", leadData);
+      return;
+    }
+
+    const response = await fetch(`${process.env.CRM_URL}/api/instagram-leads`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-crm-api-key": process.env.CRM_WEBHOOK_KEY || "",
+      },
+      body: JSON.stringify(leadData),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Failed to push Instagram lead to CRM:", errorText);
+      console.log("Storing Instagram lead locally as fallback:", leadData);
+      return;
+    }
+
+    const result = await response.json();
+    console.log("Instagram lead successfully pushed to CRM:", result);
+  } catch (error) {
+    console.error("Error pushing Instagram lead to CRM:", error);
+    console.log("Storing Instagram lead locally due to error:", leadData);
   }
 }

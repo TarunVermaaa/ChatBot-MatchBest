@@ -115,6 +115,19 @@ export const WEBSITE_CONFIGS: Record<string, WebsiteConfig> = {
       logo: "/matchbestsoftware-logo.svg",
     },
   },
+  traceplus: {
+    id: "traceplus",
+    name: "Trace",
+    domain: "trace.plus",
+    description:
+      "The ultimate digital ecosystem for Afro-Urban culture combining premium entertainment with transformative education",
+    dataFile: "tracePlus.md",
+    systemPromptFile: "traceplus-system-prompt.md",
+    theme: {
+      primaryColor: "#ec4899",
+      logo: "/traceplus-logo.svg",
+    },
+  },
 };
 
 /**
