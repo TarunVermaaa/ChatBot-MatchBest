@@ -429,9 +429,9 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"div">) {
                   <div className="relative mb-4">
                     {websiteId === 'traceplus' ? (
                       <div className="mx-auto mb-3 flex items-center justify-center">
-                        <img 
-                          src="/tracepluslogo.png" 
-                          alt="Trace+ Logo" 
+                        <img
+                          src="/tracepluslogo.png"
+                          alt="Trace+ Logo"
                           className="h-16 w-auto"
                         />
                       </div>
@@ -442,11 +442,10 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"div">) {
                     )}
                   </div>
 
-                  <h2 className={`text-2xl font-bold text-gray-900 mb-2 bg-clip-text text-transparent ${
-                    websiteId === 'traceplus' 
-                      ? 'bg-gradient-to-r from-yellow-900 via-yellow-600 to-red-800' 
+                  <h2 className={`text-2xl font-bold text-gray-900 mb-2 bg-clip-text text-transparent ${websiteId === 'traceplus'
+                      ? 'bg-gradient-to-r from-yellow-900 via-yellow-600 to-red-800'
                       : 'bg-gradient-to-r from-blue-600 to-purple-600'
-                  }`}>
+                    }`}>
                     Welcome to {websiteInfo?.name || 'Our Service'}
                   </h2>
                   <p className="text-sm text-gray-600 mb-4 leading-relaxed">
